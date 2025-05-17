@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¿Qué puedo cocinar hoy?</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(to right, #ffecd2, #fcb69f);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .app {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        max-width: 400px;
+        width: 100%;
+        animation: fadeIn 1s ease;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1rem;
+        color: #ff7e5f;
+      }
+      .ingredientes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      label {
+        background: #ffe0c7;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+      label:hover {
+        transform: scale(1.05);
+      }
+      .resultado {
+        text-align: center;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        color: #444;
+        animation: fadeInUp 0.5s ease;
+      }
+      .recomendacion {
+        margin-bottom: 1.5rem;
+      }
+      .recomendacion h2 {
+        margin: 0.5rem 0 0.25rem;
+        color: #ff7e5f;
+      }
+      .recomendacion p {
+        font-size: 0.95rem;
+        color: #333;
+      }
+      button {
+        width: 100%;
+        padding: 0.75rem;
+        background: #ff7e5f;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+      button:hover {
+        background: #eb6b4d;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>¿Qué puedo cocinar hoy?</h1>
+      <div class="ingredientes">
+        <label><input type="checkbox" value="arroz" /> arroz</label>
+        <label><input type="checkbox" value="huevo" /> huevo</label>
+        <label><input type="checkbox" value="tomate" /> tomate</label>
+        <label><input type="checkbox" value="pan" /> pan</label>
+        <label><input type="checkbox" value="queso" /> queso</label>
+        <label><input type="checkbox" value="plátano" /> plátano</label>
+        <label><input type="checkbox" value="atún" /> atún</label>
+        <label><input type="checkbox" value="leche" /> leche</label>
+      </div>
+      <button onclick="procesarSeleccion()">Obtener recomendación</button>
+      <div class="resultado" id="resultado"></div>
+    </div>
+
+    <script>
+      async function procesarSeleccion() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+        const ingredientesSeleccionados = []
+        checkboxes.forEach((cb) => {
+          if (cb.checked) ingredientesSeleccionados.push(cb.value)
+        })
+        const resultadoDiv = document.getElementById("resultado")
+
+        const recomendaciones = obtenerRecomendacionFinalObject(
+          ingredientesSeleccionados
+        )
+        // const recomendaciones = await obtenerRecomendacionConOpenAI(
+        //   ingredientesSeleccionados,
+        //   resultadoDiv
+        // )
+
+        resultadoDiv.innerHTML = recomendaciones
+          .map(
+            (r) => `
+        <div class="recomendacion">
+          <h2>${r.titulo}</h2>
+          <p>${r?.descripcion || ""}</p>
+        </div>
+      `
+          )
+          .join("")
+      }
+
+      async function obtenerRecomendacionConOpenAI(ingredientes, resultadoDiv) {
+        resultadoDiv.innerHTML = `<p>Cargando recomendaciones...</p>`
+
+        const response = await fetch(
+          "https://api.openai.com/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer token",
+            },
+            body: JSON.stringify({
+              model: "gpt-4",
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "Eres un chef experto que recomienda recetas simples y creativas según los ingredientes disponibles.",
+                },
+                {
+                  role: "user",
+                  content: `Tengo estos ingredientes: ${ingredientes.join(
+                    ", "
+                  )}. ¿Qué recetas sencillas puedo preparar con ellos? Responde con una lista de objetos JSON que tengan 'titulo' y 'descripcion'.`,
+                },
+              ],
+              temperature: 0.7,
+            }),
+          }
+        )
+
+        const data = await response.json()
+        try {
+          const contenido = data.choices[0].message.content
+          return JSON.parse(contenido)
+        } catch (e) {
+          return [
+            {
+              titulo: "Sin sugerencias",
+              descripcion:
+                "Ups, no tenemos sugerencias para esa combinación. ¡Prueba seleccionando otros ingredientes!",
+            },
+          ]
+        }
+      }
+
+      function obtenerRecomendacionFinalObject(ingredientes) {
+        let recomendaciones = []
+
+        const productoRecomendado = obtenerRecomendacion(ingredientes)
+
+        if (!productoRecomendado) {
+          return [
+            {
+              titulo: "Sin sugerencias",
+              descripcion:
+                "Ups, no tenemos sugerencias para esa combinación. ¡Prueba seleccionando otros ingredientes!",
+            },
+          ]
+        }
+
+        recomendaciones.push({
+          titulo: productoRecomendado,
+        })
+
+        return recomendaciones
+      }
+
+      function obtenerRecomendacion(ingredientes) {
+      
+      }
+    </script>
+  </body>
+</html>
