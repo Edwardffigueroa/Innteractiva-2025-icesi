@@ -3,84 +3,248 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>¿Qué puedo cocinar hoy?</title>
+    <title>ChefAI - Tu Asistente Culinario Personal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: "Segoe UI", sans-serif;
-        background: linear-gradient(to right, #ffecd2, #fcb69f);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 1rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      .app {
-        background: #fff;
-        padding: 2rem;
-        border-radius: 20px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        max-width: 400px;
-        width: 100%;
-        animation: fadeIn 1s ease;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 1rem;
-        color: #ff7e5f;
-      }
-      .ingredientes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      label {
-        background: #ffe0c7;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-      }
-      label:hover {
-        transform: scale(1.05);
-      }
-      .resultado {
-        text-align: center;
-        font-size: 1.1rem;
-        margin-top: 1rem;
-        color: #444;
-        animation: fadeInUp 0.5s ease;
-      }
-      .recomendacion {
-        margin-bottom: 1.5rem;
-      }
-      .recomendacion h2 {
-        margin: 0.5rem 0 0.25rem;
-        color: #ff7e5f;
-      }
-      .recomendacion p {
-        font-size: 0.95rem;
-        color: #333;
-      }
-      button {
-        width: 100%;
-        padding: 0.75rem;
-        background: #ff7e5f;
-        color: white;
-        border: none;
-        border-radius: 15px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.3s ease;
-      }
-      button:hover {
-        background: #eb6b4d;
       }
 
-      @keyframes fadeIn {
+      .app {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 3rem 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        max-width: 500px;
+        width: 100%;
+        animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .logo {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin: 0;
+      }
+
+      .section {
+        margin-bottom: 2rem;
+      }
+
+      .section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .ingredientes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .ingredient-item {
+        position: relative;
+      }
+
+      .ingredient-item input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .ingredient-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: #f8fafc;
+        padding: 0.875rem 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #64748b;
+        text-align: center;
+        min-height: 50px;
+      }
+
+      .ingredient-label:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .ingredient-item input[type="checkbox"]:checked + .ingredient-label {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .ingredient-icon {
+        font-size: 1.1rem;
+      }
+
+      .action-button {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .action-button:active {
+        transform: translateY(0);
+      }
+
+      .action-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      .resultado {
+        margin-top: 2rem;
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .recomendacion {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #667eea;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .recomendacion::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #667eea, transparent);
+      }
+
+      .recomendacion h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem 0;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .recomendacion p {
+        font-size: 0.95rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #64748b;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .selected-count {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-left: auto;
+      }
+
+      @keyframes slideUp {
         from {
           opacity: 0;
-          transform: translateY(-10px);
+          transform: translateY(30px);
         }
         to {
           opacity: 1;
@@ -91,29 +255,133 @@
       @keyframes fadeInUp {
         from {
           opacity: 0;
-          transform: translateY(10px);
+          transform: translateY(20px);
         }
         to {
           opacity: 1;
           transform: translateY(0);
         }
       }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .app {
+          padding: 2rem 1.5rem;
+          margin: 0.5rem;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .ingredientes {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+          gap: 0.5rem;
+        }
+
+        .ingredient-label {
+          padding: 0.75rem 0.5rem;
+          font-size: 0.8rem;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="app">
-      <h1>¿Qué puedo cocinar hoy?</h1>
-      <div class="ingredientes">
-        <label><input type="checkbox" value="arroz" /> arroz</label>
-        <label><input type="checkbox" value="huevo" /> huevo</label>
-        <label><input type="checkbox" value="tomate" /> tomate</label>
-        <label><input type="checkbox" value="pan" /> pan</label>
-        <label><input type="checkbox" value="queso" /> queso</label>
-        <label><input type="checkbox" value="plátano" /> plátano</label>
-        <label><input type="checkbox" value="atún" /> atún</label>
-        <label><input type="checkbox" value="leche" /> leche</label>
+      <div class="header">
+        <div class="logo">👨‍🍳</div>
+        <h1>ChefAI</h1>
+        <p class="subtitle">Descubre recetas perfectas con tus ingredientes disponibles</p>
       </div>
-      <button onclick="procesarSeleccion()">Obtener recomendación</button>
+
+      <div class="section">
+        <div class="section-title">
+          <i class="fas fa-shopping-basket"></i>
+          Selecciona tus ingredientes
+          <span class="selected-count" id="selectedCount" style="display: none;">
+            <i class="fas fa-check"></i>
+            <span id="countText">0</span>
+          </span>
+        </div>
+
+        <div class="ingredientes">
+          <div class="ingredient-item">
+            <input type="checkbox" value="arroz" id="arroz" />
+            <label for="arroz" class="ingredient-label">
+              <i class="fas fa-seedling ingredient-icon"></i>
+              Arroz
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="huevo" id="huevo" />
+            <label for="huevo" class="ingredient-label">
+              <i class="fas fa-egg ingredient-icon"></i>
+              Huevo
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="tomate" id="tomate" />
+            <label for="tomate" class="ingredient-label">
+              <i class="fas fa-apple-alt ingredient-icon"></i>
+              Tomate
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="pan" id="pan" />
+            <label for="pan" class="ingredient-label">
+              <i class="fas fa-bread-slice ingredient-icon"></i>
+              Pan
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="queso" id="queso" />
+            <label for="queso" class="ingredient-label">
+              <i class="fas fa-cheese ingredient-icon"></i>
+              Queso
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="plátano" id="plátano" />
+            <label for="plátano" class="ingredient-label">
+              <i class="fas fa-banana ingredient-icon"></i>
+              Plátano
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="atún" id="atún" />
+            <label for="atún" class="ingredient-label">
+              <i class="fas fa-fish ingredient-icon"></i>
+              Atún
+            </label>
+          </div>
+
+          <div class="ingredient-item">
+            <input type="checkbox" value="leche" id="leche" />
+            <label for="leche" class="ingredient-label">
+              <i class="fas fa-glass-whiskey ingredient-icon"></i>
+              Leche
+            </label>
+          </div>
+        </div>
+
+        <button class="action-button" onclick="procesarSeleccion()" id="generateBtn">
+          <i class="fas fa-magic"></i>
+          <span id="buttonText">Generar Recomendaciones</span>
+          <div class="loading-spinner" id="loadingSpinner"></div>
+        </button>
+      </div>
+
       <div class="resultado" id="resultado"></div>
     </div>
 
@@ -216,7 +484,87 @@
       }
 
       function obtenerRecomendacion(ingredientes) {
-       
+        const recetas = {
+          // Recetas con arroz
+          'arroz,huevo': [
+            { nombre: 'Arroz Frito', descripcion: 'Delicioso arroz salteado con huevo revuelto, perfecto para cualquier momento del día.' }
+          ],
+          'arroz,huevo,tomate': [
+            { nombre: 'Arroz a la Cubana', descripcion: 'Arroz blanco con huevo frito y tomate natural. Un clásico reconfortante.' }
+          ],
+          'arroz,atún': [
+            { nombre: 'Arroz con Atún', descripcion: 'Arroz sabroso mezclado con atún, ideal para una comida nutritiva y rápida.' }
+          ],
+
+          // Recetas con huevo
+          'huevo,pan': [
+            { nombre: 'Tostadas Francesas', descripcion: 'Pan dorado en huevo batido, perfecto para un desayuno especial.' }
+          ],
+          'huevo,queso': [
+            { nombre: 'Tortilla de Queso', descripcion: 'Tortilla cremosa con queso derretido, simple pero deliciosa.' }
+          ],
+          'huevo,tomate': [
+            { nombre: 'Huevos Revueltos con Tomate', descripcion: 'Huevos cremosos mezclados con tomate fresco y aromático.' }
+          ],
+
+          // Recetas con pan
+          'pan,queso': [
+            { nombre: 'Tostada con Queso Gratinado', descripcion: 'Pan tostado con queso derretido al horno, crujiente y sabroso.' }
+          ],
+          'pan,tomate,queso': [
+            { nombre: 'Bruschetta de Tomate y Queso', descripcion: 'Pan tostado con tomate fresco y queso, un aperitivo mediterráneo.' }
+          ],
+          'pan,atún': [
+            { nombre: 'Sandwich de Atún', descripcion: 'Bocadillo clásico de atún con pan fresco, nutritivo y satisfactorio.' }
+          ],
+
+          // Recetas con plátano
+          'plátano,leche': [
+            { nombre: 'Batido de Plátano', descripcion: 'Smoothie cremoso y nutritivo, perfecto para empezar el día con energía.' }
+          ],
+          'plátano,pan': [
+            { nombre: 'Tostada de Plátano', descripcion: 'Pan tostado con rodajas de plátano caramelizado, un desayuno dulce.' }
+          ],
+
+          // Recetas individuales
+          'tomate': [
+            { nombre: 'Ensalada de Tomate', descripcion: 'Tomates frescos aliñados con aceite y sal, simple y refrescante.' }
+          ],
+          'queso': [
+            { nombre: 'Dados de Queso', descripcion: 'Aperitivo de queso cortado en cubitos, perfecto para picar.' }
+          ],
+          'atún': [
+            { nombre: 'Atún al Natural', descripcion: 'Atún servido con un toque de limón y hierbas frescas.' }
+          ]
+        };
+
+        // Ordenar ingredientes alfabéticamente para coincidir con las claves
+        const claveBusqueda = ingredientes.sort().join(',');
+
+        // Buscar receta exacta
+        if (recetas[claveBusqueda]) {
+          return recetas[claveBusqueda][0].nombre;
+        }
+
+        // Buscar recetas que contengan algunos de los ingredientes
+        const recetasCompatibles = [];
+        for (const [key, recetaArray] of Object.entries(recetas)) {
+          const ingredientesReceta = key.split(',');
+          const coincidencias = ingredientesReceta.filter(ing => ingredientes.includes(ing));
+
+          if (coincidencias.length >= 2 && coincidencias.length >= ingredientesReceta.length * 0.7) {
+            recetasCompatibles.push({
+              ...recetaArray[0],
+              coincidencias: coincidencias.length,
+              total: ingredientesReceta.length
+            });
+          }
+        }
+
+        // Ordenar por mayor número de coincidencias
+        recetasCompatibles.sort((a, b) => b.coincidencias - a.coincidencias);
+
+        return recetasCompatibles.length > 0 ? recetasCompatibles[0].nombre : null;
       }
     </script>
   </body>
